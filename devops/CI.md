@@ -10,7 +10,7 @@
 
 La CI est une méthode de développement de logiciel DevOps avec laquelle les développeurs intègrent régulièrement leurs modifications de code à un référentiel centralisé (par exemple un repository GitHub), ensuite des opérations de création (build du projet) et de test sont automatiquement lancées.
 
-La CI regroupe un ensemble d’actions automatisées permettant de tester l'application et d'assurer son bon fonctionnement. Pour faire de la CI on lance des actions nommées GitHub Actions à chaque changement de l’application, par exemple sur un push ou une PR (pull request).
+La CI regroupe un ensemble d’actions automatisées permettant d'assurer le bon fonctionnement d'une application. Pour faire de la CI on lance des actions nommées GitHub Actions à chaque changement de l’application, par exemple sur un push ou une PR (pull request).
 
 - la mise en place d'une github action ✔️
 
@@ -27,9 +27,9 @@ Un fichier .yml est composé de différentes parties. Il utilise des clés pour 
 
 - **on** : précise sur quel type d'événement les jobs vont se lancer (pull_request, push...). Il est possible de combiner plusieurs événements.
 
-- **jobs** : englobe l'ensemble des GitHubActions.
+- **jobs** : ensemble d'opération qui seront executer
 
-- **nom** du jobs : nom donné à la GitHub Action
+- **nom** du jobs : nom donné au job
 
 - **runs-on** : décrit l’environnement de base sur lequel va tourner le job. Il se lance sur des machines virtuelles du système de GitHub.
 
@@ -78,18 +78,18 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/quete1902:latest
 ```
 
-Cet extrait de code présente un fichier .yml. Il contient 2 GitHub Actions (jobs) nommés test front et docker.
+Cet extrait de code présente un fichier .yml. Il contient 2 jobs nommés test front et docker.
 
-La première GitHub Action a pour objectif d'automatiser les lancements des test dans la partie client (frontend) à la création d’un commit (push).
+Le premier job a pour objectif d'automatiser les lancements des test dans la partie client (frontend) à la création d’un commit (push).
 
-La deuxieme GitHub Actions a pour objectif de builder une image docker et de l’envoyer ensuite sur le registre dockerHub. Cette GitHub Action a besoin que la première GitHub Action s'exécute avec succès pour se lancer (clé needs). Elle s'executera après l'evenement push (commit) sur la branche main (clé if).
+Le deuxieme job a pour objectif de builder une image docker et de l’envoyer ensuite sur le registre dockerHub. Cette GitHub Action a besoin que la première GitHub Action s'exécute avec succès pour se lancer (clé needs). Elle s'executera après l'evenement push (commit) sur la branche main (clé if).
 Dans cette étape, l'image docker est placée dans le registre DockerHub pour permettre à notre serveur de production de récupérer la dernière image de notre application. À chaque envoi de code sur notre branche main, le serveur de production sera mis à jour automatiquement avec la dernière version de notre application. Nous préparons la CD avec le déploiement automatique, également appelé déploiement continu.
 
 ### Utilisation dans un projet ✔️
 
-[lien github](...)
+[lien github](https://github.com/Celine-Renault/CI-workflows-docker-image)
 
-Description :
+Description : Quêtes numéro 2 sur la CI.
 
 ### Utilisation en production si applicable❌ / ✔️
 
