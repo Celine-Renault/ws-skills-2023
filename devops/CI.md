@@ -43,13 +43,13 @@ Pour créer un workflow, il est nécessaire de créer un dossier à la racine de
 
 ### Un exemple personnel commenté ✔️
 
-`
+```yml
 name: jest-and-docker-ci
 
 on: push
 
 jobs:
-test-front:
+    test-front:
 runs-on: ubuntu-latest
 steps: - name: Check out code
 uses: actions/checkout@v2 - name: Goto client and run tests
@@ -74,7 +74,7 @@ push: true
 context: "{{defaultContext}}:client"
 tags: ${{ secrets.DOCKERHUB_USERNAME }}/quete1902:latest
 
-`
+```
 
 ### Utilisation dans un projet ❌ / ✔️
 
