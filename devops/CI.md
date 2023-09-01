@@ -21,23 +21,23 @@ GitHub Actions est une plateforme d’intégration et de livraison continue (CI/
 
 Pour créer un workflow, il est nécessaire de créer un dossier à la racine de son projet nommé.github dans lequel il faut ajouter un second dossier nommé workflows. Dans ce sous-dossier, on ajoute un fichier .yml permettant d'implémenter des GitHubActions. L'indentation du code est très importante sinon, le test ne fonctionnera pas.
 
-- Un fichier .yml est composé de différentes parties. Il utilise des clés pour structurer le code. Voici quelques clés :
+Un fichier .yml est composé de différentes parties. Il utilise des clés pour structurer le code. Voici quelques clés :
 
-- name : donne le nom du test.
+- **name** : donne le nom du test.
 
-- on : précise sur quel type d'événement les jobs vont se lancer (pull_request, push...). Il est possible de combiner plusieurs événements.
+- **on** : précise sur quel type d'événement les jobs vont se lancer (pull_request, push...). Il est possible de combiner plusieurs événements.
 
-- jobs : englobe l'ensemble des GitHubActions.
+- **jobs** : englobe l'ensemble des GitHubActions.
 
-- nom du jobs : nom donné à la GitHub Action
+- **nom** du jobs : nom donné à la GitHub Action
 
-- runs-on : décrit l’environnement de base sur lequel va tourner le job. Il se lance sur des machines virtuelles du système de GitHub.
+- **runs-on** : décrit l’environnement de base sur lequel va tourner le job. Il se lance sur des machines virtuelles du système de GitHub.
 
-- steps : décrit les étapes de notre job. Il existe deux types d'étapes, les run et les uses.
+- **steps** : décrit les étapes de notre job. Il existe deux types d'étapes, les run et les uses.
 
-- uses : utilisation de script prédéfinis par GitHub Actions. On les retrouve sur des dépôts GitHub ou sur le site de docker.
+  - **uses** : utilisation de script prédéfinis par GitHub Actions. On les retrouve sur des dépôts GitHub ou sur le site de docker.
 
-- run : partie "manuelle", ou l'on ajoute sa propre logique et ses propres commandes (exemple : npm i pour installer les dépendances de l'application)
+  - **run** : partie "manuelle", ou l'on ajoute sa propre logique et ses propres commandes (exemple : npm i pour installer les dépendances de l'application)
 
 ## 💻 J'utilise
 
@@ -49,34 +49,43 @@ name: jest-and-docker-ci
 on: push
 
 jobs:
-    test-front:
-runs-on: ubuntu-latest
-steps: - name: Check out code
-uses: actions/checkout@v2 - name: Goto client and run tests
-run: cd client && npm i && npm test
-
-        //// 2e GitHubAction qui s'execute apres la premiere GitHubAction nommé "test-front" (clé needs) et si on envoie notre code sur la branche main (clé if)
-
-docker:
-needs: test-front
-if: github.ref == 'refs/heads/main'
-runs-on: ubuntu-latest
-steps: - name: Set up QEMU
-uses: docker/setup-qemu-action@v2 - name: Set up Docker Buildx
-uses: docker/setup-buildx-action@v2 - name: Login to Docker Hub
-uses: docker/login-action@v2
-with:
-username: ${{ secrets.DOCKERHUB_USERNAME }}
-password: ${{ secrets.DOCKERHUB_TOKEN }} - name: Build and push
-uses: docker/build-push-action@v4
-with:
-push: true
-context: "{{defaultContext}}:client"
-tags: ${{ secrets.DOCKERHUB_USERNAME }}/quete1902:latest
-
+  test-front:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Goto client and run tests
+        run: cd client && npm i && npm test
+  docker:
+    needs: test-front
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: "{{defaultContext}}:client"
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/quete1902:latest
 ```
 
-### Utilisation dans un projet ❌ / ✔️
+Cet extrait de code présente un fichier .yml. Il contient 2 GitHub Actions (jobs) nommés test front et docker.
+
+La première GitHub Action a pour objectif d'automatiser les lancements des test dans la partie client (frontend) à la création d’un commit (push).
+
+La deuxieme GitHub Actions a pour objectif de builder une image docker et de l’envoyer ensuite sur le registre dockerHub. Cette GitHub Action a besoin que la première GitHub Action s'exécute avec succès pour se lancer (clé needs). Elle s'executera après l'evenement push (commit) sur la branche main (clé if).
+Dans cette étape, l'image docker est placée dans le registre DockerHub pour permettre à notre serveur de production de récupérer la dernière image de notre application. À chaque envoi de code sur notre branche main, le serveur de production sera mis à jour automatiquement avec la dernière version de notre application. Nous préparons la CD avec le déploiement automatique, également appelé déploiement continu.
+
+### Utilisation dans un projet ✔️
 
 [lien github](...)
 
